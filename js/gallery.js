@@ -63,49 +63,56 @@ const images = [
       description: "Lighthouse Coast Sea",
     },
   ];
-
   const gallery = document.querySelector('.gallery');
 
-gallery.addEventListener('click', event => {
-  event.preventDefault();
-
-  const target = event.target;
-  if (target.nodeName !== 'IMG') return;
-
-  const instance = basicLightbox.create(`
-    <img src="${target.dataset.source}" width="800" height="600">
-`);
-
-  instance.show();
-
-  const onEscapePress = event => {
-    if (event.code === 'Escape') {
-      instance.close();
-      document.removeEventListener('keydown', onEscapePress);
-    }
-  };
-
-  document.addEventListener('keydown', onEscapePress);
-});
-
-const galleryItems = images.map(image => {
-  const galleryItem = document.createElement('li');
-  galleryItem.classList.add('gallery-item');
-
-  const galleryLink = document.createElement('a');
-  galleryLink.classList.add('gallery-link');
-  galleryLink.href = image.original;
-
-  const galleryImage = document.createElement('img');
-  galleryImage.classList.add('gallery-image');
-  galleryImage.src = image.preview;
-  galleryImage.alt = image.description;
-  galleryImage.dataset.source = image.original;
-
-  galleryLink.appendChild(galleryImage);
-  galleryItem.appendChild(galleryLink);
-
-  return galleryItem;
-});
-
-gallery.append(...galleryItems);
+  gallery.addEventListener('click', event => {
+    event.preventDefault();
+  
+    const target = event.target;
+    if (target.nodeName !== 'IMG') return;
+  
+    const instance = basicLightbox.create(`
+      <img src="${target.dataset.source}" width="800" height="600">
+    `, {
+      onShow: (instance) => {
+        document.addEventListener('keydown', onEscapePress);
+      },
+      onClose: (instance) => {
+        document.removeEventListener('keydown', onEscapePress);
+      }
+    });
+  
+    instance.show();
+  
+    const onEscapePress = event => {
+      if (event.code === 'Escape') {
+        instance.close();
+      }
+    };
+  
+  });
+  
+  const galleryItems = images.map(image => {
+    const galleryItem = document.createElement('li');
+    galleryItem.classList.add('gallery-item');
+  
+    const galleryLink = document.createElement('a');
+    galleryLink.classList.add('gallery-link');
+    galleryLink.href = image.original;
+  
+    const galleryImage = document.createElement('img');
+    galleryImage.classList.add('gallery-image');
+    galleryImage.src = image.preview;
+    galleryImage.alt = image.description;
+    galleryImage.dataset.source = image.original;
+    galleryImage.width = 800;
+    galleryImage.height = 600;
+  
+    galleryLink.appendChild(galleryImage);
+    galleryItem.appendChild(galleryLink);
+  
+    return galleryItem;
+  });
+  
+  gallery.append(...galleryItems);
+  
